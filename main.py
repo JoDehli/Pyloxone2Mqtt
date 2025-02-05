@@ -26,10 +26,10 @@ async def main():
     mqtt_password = os.getenv("MQTT_PASSWORD")
     mqtt_tls = os.getenv("MQTT_TLS", "false").lower() == "true"
     mqtt_tls_cert = os.getenv("MQTT_TLS_CERT")
-    mqtt_topics = os.getenv("MQTT_TOPICS", "mqtt2loxone/#").split(
-        ","
-    )  # Default: subscribe to mqtt2loxone
+    mqtt_topics = os.getenv("MQTT_TOPICS", "#").split(",")  # Default: subscribe to all topics
 
+    # Set mqtt_port based on mqtt_tls
+    mqtt_port = int(os.getenv("MQTT_PORT", "8883" if mqtt_tls else "1883"))
     # Read FastAPI and WebSocket configuration
     # start_fastapi = os.getenv("START_FASTAPI", "true").lower() == "true"
     # start_websocket = os.getenv("START_WEBSOCKET", "true").lower() == "true"
@@ -61,6 +61,7 @@ async def main():
         topics=mqtt_topics,
         username=mqtt_username,
         password=mqtt_password,
+        port=mqtt_port,
         tls=mqtt_tls,
         tls_cert=mqtt_tls_cert,
     )

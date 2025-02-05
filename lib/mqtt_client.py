@@ -16,6 +16,7 @@ class MQTTClient:
         topics: list[str],
         username: str = None,
         password: str = None,
+        port: int = 1883,
         tls: bool = False,
         tls_cert: str = None,
     ):
@@ -35,6 +36,7 @@ class MQTTClient:
         self.topics = topics
         self.username = username
         self.password = password
+        self.port = port
         self.tls = tls
         self.tls_cert = tls_cert
         self.reconnect_attempts = 0
@@ -48,7 +50,7 @@ class MQTTClient:
             try:
                 async with Client(
                         self.broker,
-                        port=8883 if self.tls else 1883,
+                        port=self.port,
                         username=self.username,
                         password=self.password,
                         tls_context=self._get_tls_context() if self.tls else None,
