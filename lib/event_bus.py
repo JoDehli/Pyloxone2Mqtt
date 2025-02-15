@@ -32,14 +32,14 @@ class EventBus:
 
             # Messages to Loxone from Mqtt
             if topic.matches("mqtt2loxone/#"):
-                _LOGGER.debug("Received message from Mqtt to Loxone topic %s", topic)
+                _LOGGER.debug("Received message from mqtt to Loxone topic %s: %s", topic, message)
                 new_topic = Topic(str(topic).replace("mqtt2loxone/", "pyloxone/"))
                 await self.queue.put((new_topic, message))
                 continue
 
             # Messages to Mqtt from Loxone
             if topic.matches("loxone2mqtt/#"):
-                _LOGGER.debug("Received message from Loxone to Mqtt topic %s", topic)
+                #_LOGGER.debug("Received message from Loxone to mqtt topic %s: %s", topic, message)
                 for mqtt_callback in self.subscribers["loxone2mqtt"]:
                     messages = []
                     for k, v in message.items():
@@ -56,7 +56,7 @@ class EventBus:
                     continue
 
             if topic.matches("websocket_in/#"):
-                _LOGGER.debug("Received message from websocket_in topic %s", topic)
+                #_LOGGER.debug("Received message from websocket_in topic %s", topic)
                 new_topic = Topic(str(topic).replace("websocket_in/", "loxone2mqtt/"))
                 await self.queue.put((new_topic, message))
                 continue

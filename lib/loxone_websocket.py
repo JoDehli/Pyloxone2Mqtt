@@ -9,7 +9,7 @@ from .event_bus import EventBus
 from .pyloxone_api.connection import LoxoneConnection
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.setLevel("DEBUG")
+#_LOGGER.setLevel("DEBUG")
 
 
 class LoxoneWebSocketClient:
@@ -22,7 +22,7 @@ class LoxoneWebSocketClient:
         self.event_bus = event_bus
 
     async def publish_to_eventbus(self, message: dict) -> None:
-        _LOGGER.debug("Publishing message to event bus websocket_in %s", message)
+        #_LOGGER.debug("Publishing message to event bus websocket_in %s", message)
         await self.event_bus.publish(Topic("websocket_in/"), message)
 
     @staticmethod
@@ -52,14 +52,14 @@ class LoxoneWebSocketClient:
                 token = await self.token_load()
                 api = LoxoneConnection(
                     host=self.host,
-                    port=int(self.port),
+                    port=self.port,
                     username=self.username,
                     password=self.password,
                     token=token,
                     token_safe_callback=self.token_safe
                 )
-
-                await api.start_listening(callback=self.publish_to_eventbus)
+                asyncio.create_task(api.start_listening(callback=self.publish_to_eventbus))
+                
                 break  # Exit the loop if connection is successful
 
             except Exception as e:
@@ -72,7 +72,6 @@ class LoxoneWebSocketClient:
 
     async def send(self, message: dict):
         """Send a message to the WebSocket."""
-        _LOGGER.debug("Sending message to WebSocket %s", message )
-
+        _LOGGER.info("Sending message to WebSocket %s", message )
         #async with websockets.connect(self.uri) as websocket:
         #    await websocket.send(message["payload"])

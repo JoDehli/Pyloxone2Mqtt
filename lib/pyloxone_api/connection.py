@@ -379,7 +379,10 @@ class LoxoneConnection(LoxoneBaseConnection):
         callback: Optional[Callable[[Any], Optional[Awaitable[None]]]],
         connection: LoxoneWebsocketClientProtocol,
     ) -> None:
-        # with contextlib.suppress(ConnectionClosed):
+        # Publish the LoxAPP3 file
+        awaitable = callback({"LoxAPP3": self.structure_file})
+        if awaitable:
+            await awaitable        
 
         while True:
             try:

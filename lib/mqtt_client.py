@@ -8,7 +8,7 @@ from gmqtt.mqtt.constants import PubAckReasonCode
 from .event_bus import EventBus
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.setLevel("DEBUG")
+_LOGGER.setLevel("ERROR")
 
 class MQTTClient:
     def __init__(
@@ -18,6 +18,7 @@ class MQTTClient:
         topics: list[str],
         username: str = None,
         password: str = None,
+        port: int = 1883,
         tls: bool = False,
         tls_cert: str = None,
     ):
@@ -37,6 +38,9 @@ class MQTTClient:
         self.event_bus = event_bus
         self.topics = topics
         self.unique_id = f"{username}_{int(time.time())}"
+        self.username = username
+        self.password = password
+        self.port = port
         self.tls = tls
         self.tls_cert = tls_cert
         self.reconnect_delay = 10  # seconds

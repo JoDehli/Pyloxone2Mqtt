@@ -35,7 +35,7 @@ class LoxoneWebsocketClientProtocol(websockets.legacy.client.WebSocketClientProt
 
     async def recv(self) -> str | bytes:
         result = await super().recv()
-        _LOGGER.debug(f"Received: {result[:80]!r}")
+        #_LOGGER.debug(f"Received: {result[:80]!r}")
         return result
 
     async def send(self, msg) -> None:

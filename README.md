@@ -16,8 +16,9 @@ LOG_LEVEL=INFO
 MQTT_BROKER=
 MQTT_USERNAME=
 MQTT_PASSWORD=
-MQTT_PORT=1883
-# Do not change this for now
+MQTT_PORT=
+MQTT_TLS=
+MQTT_TLS_CERT=""
 MQTT_TOPICS="mqtt2loxone/#"
 
 # Loxone
