@@ -8,7 +8,7 @@ from gmqtt.mqtt.constants import PubAckReasonCode
 from .event_bus import EventBus
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.setLevel("DEBUG")
+_LOGGER.setLevel("ERROR")
 
 class MQTTClient:
     def __init__(
