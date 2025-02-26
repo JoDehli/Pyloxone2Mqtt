@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from lib.event_bus import EventBus
 from lib.loxone_websocket import LoxoneWebSocketClient
 from lib.mqtt_client import MQTTClient
+from lib.homeassistant import HomeAssistant
 
 load_dotenv()  # Load .env file
 
@@ -68,22 +69,16 @@ async def main():
     )
 
     # Initialize HomeAssistant
-    #homeassistant = HomeAssistant(
-    #    broker=mqtt_broker,
-    #    event_bus=event_bus,
-    #    topics=["loxone2mqtt/Lox3APP"],
-    #    username=mqtt_username,
-    #    password=mqtt_password,
-    #    port=mqtt_port,
-    #    tls=mqtt_tls,
-    #    tls_cert=mqtt_tls_cert,
-    #)
+    homeassistant = HomeAssistant(
+        event_bus=event_bus,
+    )    
 
     # Standard subscriptions
     await event_bus.subscribe("pyloxone", websocket_client.send)
     await event_bus.subscribe("loxone2mqtt", mqtt_client.publish_batch)
-    # subscribe to loxone2mqtt topic so the HA MQTT AutoDiscovery can be started
-    # await event_bus.subscribe("loxone2mqtt", homeassistant.generate_ha_mqtt_autodiscovery)
+    await event_bus.subscribe("homeassistant", mqtt_client.publish_batch)
+    #subscribe to loxone2mqtt topic so the HA MQTT AutoDiscovery can be started
+    await event_bus.subscribe("loxone2mqtt", homeassistant.generate_ha_mqtt_autodiscovery)
     ###
     # # Start FastAPI as a task
     # api_task = asyncio.create_task(uvicorn.run(app, host="0.0.0.0", port=8000))

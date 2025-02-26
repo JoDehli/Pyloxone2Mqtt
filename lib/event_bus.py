@@ -19,6 +19,14 @@ class EventBus:
             topic = Topic(topic)
         await self.queue.put((topic, message))
 
+    async def publish_batch(self, messages: list[dict[str, Any]]) -> None:
+        """Publish multiple messages to the event bus."""
+        for item in messages:
+            topic = item["topic"]
+            message = item["payload"]         
+            await self.queue.put((topic, str(message)))
+
+
     async def subscribe(self, topic: str, callback: Callable[[Any], Awaitable[None]]) -> None:
         """Subscribe to a specific topic."""
         if topic not in self.subscribers:
@@ -32,14 +40,14 @@ class EventBus:
 
             # Messages to Loxone from Mqtt
             if topic.matches("mqtt2loxone/#"):
-                _LOGGER.debug("Received message from Mqtt to Loxone topic %s", topic)
+                _LOGGER.debug("Received message from mqtt to Loxone topic %s: %s", topic, message)
                 new_topic = Topic(str(topic).replace("mqtt2loxone/", "pyloxone/"))
                 await self.queue.put((new_topic, message))
                 continue
 
             # Messages to Mqtt from Loxone
             if topic.matches("loxone2mqtt/#"):
-                _LOGGER.debug("Received message from Loxone to Mqtt topic %s", topic)
+                #_LOGGER.debug("Received message from Loxone to mqtt topic %s: %s", topic, message)
                 for mqtt_callback in self.subscribers["loxone2mqtt"]:
                     messages = []
                     for k, v in message.items():
@@ -55,8 +63,15 @@ class EventBus:
                     await pyloxone_callback(message)
                     continue
 
+            if topic.matches("homeassistant/#"):
+                for ha_callback in self.subscribers["homeassistant"]:
+                    await ha_callback({"topic":topic, "payload": message})
+                    continue
+
             if topic.matches("websocket_in/#"):
-                _LOGGER.debug("Received message from websocket_in topic %s", topic)
+                #_LOGGER.debug("Received message from websocket_in topic %s", topic)
                 new_topic = Topic(str(topic).replace("websocket_in/", "loxone2mqtt/"))
                 await self.queue.put((new_topic, message))
                 continue
+
+        
