@@ -21,7 +21,7 @@ from typing import (Any, Awaitable, Callable, Dict, List, NoReturn, Optional,
                     Sequence, Union)
 
 import websockets.exceptions
-import websockets.legacy.client as wslib
+import websockets as wslib
 from Crypto.Cipher import AES, PKCS1_v1_5
 from Crypto.Hash import HMAC, SHA1, SHA256
 from Crypto.PublicKey import RSA
@@ -41,7 +41,7 @@ from .loxone_http_client import LoxoneAsyncHttpClient
 from .loxone_token import LoxoneToken, LxJsonKeySalt
 from .message import (BaseMessage, BinaryFile, LLResponse, MessageType,
                       TextMessage, parse_message)
-from .websocket_protocol import LoxoneWebsocketClientProtocol
+from .websocket_protocol import LoxoneClientConnection
 import warnings
 
 _LOGGER = logging.getLogger(__name__)
@@ -281,7 +281,7 @@ class LoxoneBaseConnection:
 
 
 class LoxoneConnection(LoxoneBaseConnection):
-    connection: Optional[LoxoneWebsocketClientProtocol]
+    connection: Optional[LoxoneClientConnection]
     _recv_loop: Optional["asyncio.Task[None]"]
 
     async def __aenter__(self) -> "LoxoneConnection":
@@ -379,7 +379,7 @@ class LoxoneConnection(LoxoneBaseConnection):
     async def _do_start_listening(
         self,
         callback: Optional[Callable[[Any], Optional[Awaitable[None]]]],
-        connection: LoxoneWebsocketClientProtocol,
+        connection: LoxoneClientConnection,
     ) -> None:
         # Publish the LoxAPP3 file
         awaitable = callback({"LoxAPP3": self.structure_file})
@@ -406,7 +406,7 @@ class LoxoneConnection(LoxoneBaseConnection):
             except Exception as e:
                 raise e
 
-    async def open(self, session) -> Optional[LoxoneWebsocketClientProtocol]:
+    async def open(self, session) -> Optional[LoxoneClientConnection]:
         if self.connection:
             # someone else already created a new connection
             return self.connection
@@ -511,11 +511,8 @@ class LoxoneConnection(LoxoneBaseConnection):
         # url = f"{scheme}://{self._host}:{self._port}/ws/rfc6455"
         _ = await wslib.connect(
             url,
-            timeout=TIMEOUT,
-            ping_interval=None,
-            ping_timeout=None,
-            create_protocol=LoxoneWebsocketClientProtocol,
-            subprotocols=["remotecontrol"],  # type: ignore
+            open_timeout=TIMEOUT,
+            create_connection=LoxoneClientConnection,
         )
 
         self.connection = _
