@@ -9,3 +9,4 @@ uvicorn
 websockets
 python-dotenv
 gmqtt
+Jinja2

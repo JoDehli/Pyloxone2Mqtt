@@ -2,8 +2,10 @@ import asyncio
 import logging
 import os
 
+import uvicorn
 from dotenv import load_dotenv
 
+from lib.api_server import  run_fastapi_app
 from lib.event_bus import EventBus
 from lib.loxone_websocket import LoxoneWebSocketClient
 from lib.mqtt_client import MQTTClient
@@ -44,7 +46,7 @@ async def main():
     # Instantiate the event bus
     event_bus = EventBus()
 
-    # # Initialize LoxoneWebsocket
+    # Initialize LoxoneWebsocket
     websocket_client = (
         LoxoneWebSocketClient(
             host=websocket_url,
@@ -82,18 +84,19 @@ async def main():
     # Standard subscriptions
     await event_bus.subscribe("pyloxone", websocket_client.send)
     await event_bus.subscribe("loxone2mqtt", mqtt_client.publish_batch)
+
+
     # subscribe to loxone2mqtt topic so the HA MQTT AutoDiscovery can be started
     # await event_bus.subscribe("loxone2mqtt", homeassistant.generate_ha_mqtt_autodiscovery)
     ###
     # # Start FastAPI as a task
-    # api_task = asyncio.create_task(uvicorn.run(app, host="0.0.0.0", port=8000))
-    #    # Start tasks
-    # await event_bus.subscribe("mqtt_out", mqtt_client.publish)
+
 
     tasks = [
         asyncio.create_task(mqtt_client.connect_and_listen()),
         asyncio.create_task(websocket_client.connect_and_listen()),
         asyncio.create_task(event_bus.run()),
+        asyncio.to_thread(run_fastapi_app,event_bus),  # Add the FastAPI app task
     ]
     try:
         await asyncio.gather(*tasks)

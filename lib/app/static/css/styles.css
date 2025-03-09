@@ -1,0 +1,28 @@
+.hero {
+    background: linear-gradient(45deg, #007bff, #6610f2);
+}
+
+/*
+.search-input {
+    width: 500px;
+    border: 2px solid #007bff;
+    border-radius: 25px;
+    padding: 8px 15px;
+    font-size: 16px; /
+    outline: none;
+    transition: 0.3s ease-in-out;
+}
+*/
+#deviceTable_filter {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+#deviceTable_filter > label > input[type=search] {
+    margin-left: 10px;
+}
+
+.search-input:focus {
+    border-color: #6610f2; /* Purple when focused */
+    box-shadow: 0 0 8px rgba(102, 16, 242, 0.5); /* Glow effect */
+}

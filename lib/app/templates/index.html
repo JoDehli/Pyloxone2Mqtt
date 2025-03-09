@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', path='/favicon.ico') }}" type="image/x-icon">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">{{ title }} - (Software of Miniserver {{structure_file_data["software_version"]}})</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Devices</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+<!--    &lt;!&ndash; Hero Section &ndash;&gt;-->
+<!--    <header class="hero bg-primary text-white text-center py-5">-->
+<!--        <div class="container">-->
+<!--            <h1>Welcome to FastAPI</h1>-->
+<!--            <p class="lead">A lightweight, high-performance web framework for Python</p>-->
+<!--        </div>-->
+<!--    </header>-->
+
+    <!-- Table Section -->
+    <!-- Custom Search Field -->
+
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Devices</h2>
+<!--        <div class="mb-3 d-flex justify-content-end">-->
+<!--            <input type="text" id="customSearch" class="form-control search-input" placeholder="🔍 Search devices...">-->
+<!--        </div>-->
+
+        <div class="table-responsive">
+            <table id="deviceTable" class="table table-bordered table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Room</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for device in structure_file_data["controls"] %}
+                    <tr>
+                        <td>{{ device.name }}</td>
+                        <td>{{ device.type }}</td>
+                        <td>{{ device.room.name }}</td>
+                        <td>{{ device.category.name  }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light text-dark text-center py-3">
+        <p>&copy; 2025 PyLoxoneMqtt</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="{{ url_for('static', path='/js/scripts.js') }}"></script>
+<!--    <script>-->
+<!--        $(document).ready(function () {-->
+<!--            var table = $("#userTable").DataTable({-->
+<!--                paging: true,-->
+<!--                searching: true,-->
+<!--                ordering: true,-->
+<!--                info: true,-->
+<!--                lengthMenu: [5, 10, 25, 50],-->
+<!--            });-->
+
+<!--            // Custom search input functionality-->
+<!--            $("#customSearch").on("keyup", function () {-->
+<!--                var value = $(this).val();-->
+<!--                console.log("Search input:", value);-->
+<!--                table.search(value).draw();-->
+<!--            });-->
+<!--        });-->
+<!--    </script>-->
+</body>
+</html>

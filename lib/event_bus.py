@@ -10,6 +10,7 @@ _LOGGER.setLevel("DEBUG")
 
 class EventBus:
     def __init__(self):
+        self.structure_file: dict = {}
         self.queue = asyncio.Queue()
         self.subscribers: Dict[str, list[Callable[[Any], Awaitable[None]]]] = {}
 
@@ -40,6 +41,8 @@ class EventBus:
             # Messages to Mqtt from Loxone
             if topic.matches("loxone2mqtt/#"):
                 _LOGGER.debug("Received message from Loxone to Mqtt topic %s", topic)
+
+
                 for mqtt_callback in self.subscribers["loxone2mqtt"]:
                     messages = []
                     for k, v in message.items():
@@ -47,6 +50,10 @@ class EventBus:
                         new_message = {"topic":new_topic, "payload": v}
                         messages.append(new_message)
                     await mqtt_callback(messages)
+
+                for message in messages:
+                    if message["topic"].matches("loxone2mqtt/LoxAPP3"):
+                        self.structure_file = message["payload"]
                 continue
 
             if topic.matches("pyloxone/#") and "pyloxone" in self.subscribers:
